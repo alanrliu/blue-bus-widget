@@ -267,11 +267,7 @@ async function buildWidget() {
   return w;
 }
 
-// Scriptable takes a script's name from its filename, so a pasted script
-// lands as "Untitled Script". On the first in-app run we write ourselves to
-// "Blue Bus.js" in Scriptable's documents folder and delete the file we came
-// from. Scripts live at <documentsDirectory>/<Script.name()>.js; iCloud is
-// the real folder when iCloud Drive is on, local otherwise, so try both.
+// rename the script to find it easier to find
 function renameSelf() {
   if (Script.name() === SCRIPT_NAME) return false;
   for (const open of [() => FileManager.iCloud(), () => FileManager.local()]) {
