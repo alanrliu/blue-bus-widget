@@ -141,7 +141,7 @@
     </header>
 
     <div class="video-wrap" id="video-wrap">
-      <video id="demo" playsinline muted loop controls preload="none"
+      <video id="demo" playsinline muted autoplay loop
              poster="./poster.jpg" style="display:none">
         <source src="./demo.mp4" type="video/mp4" />
       </video>
@@ -181,9 +181,9 @@
     (async () => {
       const video = document.getElementById('demo');
       const placeholder = document.getElementById('video-placeholder');
-      // preload="none" means the mp4 is not touched until someone taps play,
-      // so the poster is what stands in for it — probe that 75 KB image
-      // rather than the 3.7 MB video to decide whether a demo exists.
+      // The poster is the still shown until autoplay has a first frame, so if
+      // it loads, a demo exists and the video can be shown. Probing the small
+      // image avoids waiting on the mp4 just to make that call.
       const probe = new Image();
       probe.addEventListener('load', () => {
         video.style.display = 'block';

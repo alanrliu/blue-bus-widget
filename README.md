@@ -14,7 +14,7 @@ A Scriptable iOS home-screen widget for the Bi-Co Blue Bus. Supports small (2x2)
 
 - `widget.js` — the Scriptable script. Paste this into Scriptable.
 - `index.html` — static landing page with a one-tap Copy button. Fetches `./widget.js` at click time.
-- `demo.mp4` / `poster.jpg` — screen recording on the landing page and its still frame. The page shows the poster and only loads the video when someone taps play.
+- `demo.mp4` / `poster.jpg` — screen recording on the landing page and its still frame. The video autoplays muted on loop; the poster shows until it starts.
 - `vercel.json` — sets `Cache-Control` on `widget.js` so users always get the latest.
 - `scrape.js` — Node script that regenerates the SCHEDULE block from the BMC page. Run manually if the schedule changes.
 - `test.js` — Node self-check for the departure-picking logic.
