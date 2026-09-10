@@ -96,9 +96,17 @@
       font-size: 13px;
       cursor: pointer;
     }
-    details.raw pre {
+    /* A textarea, not a pre: iOS ignores user-select: all and only offers
+       "Select All" in form fields. */
+    details.raw textarea {
+      display: block;
+      width: 100%;
+      box-sizing: border-box;
+      height: 300px;
+      resize: vertical;
+      border: 0;
+      color: inherit;
       text-align: left;
-      max-height: 300px;
       overflow: auto;
       -webkit-overflow-scrolling: touch;
       background: rgba(0,0,0,0.28);
@@ -106,9 +114,6 @@
       padding: 12px;
       margin: 0;
       font: 12px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace;
-      /* One tap selects the whole script, which is the point of this block. */
-      -webkit-user-select: all;
-      user-select: all;
     }
 
     ol.steps {
@@ -157,8 +162,8 @@
       <p class="copy-note" id="copy-note">Tap once, then paste into Scriptable.</p>
       <details class="raw">
         <summary>Button not working? Copy it by hand</summary>
-        <p class="copy-note">Tap the script once to select all of it, then Copy.</p>
-        <pre id="source">Loading&hellip;</pre>
+        <p class="copy-note">Tap the script to select all of it, then Copy. Or long-press → Select All → Copy.</p>
+        <textarea id="source" readonly>Loading&hellip;</textarea>
       </details>
     </div>
 
@@ -244,6 +249,7 @@
           source.textContent = 'Could not load widget.js: ' + e.message;
         }
       });
+      source.addEventListener('click', () => source.setSelectionRange(0, source.value.length));
 
       btn.addEventListener('click', async () => {
         try {
