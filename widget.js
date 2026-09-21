@@ -4,9 +4,7 @@
 // Blue Bus (Bi-Co) — Scriptable small/medium widget
 // Left: next departures from BMC. Right: next departures from HC.
 // Tap opens the official schedule page.
-// Schedule auto-updates: the widget fetches schedule.json from the Vercel site
-// once every 24h and caches it. The SCHEDULE block below is the offline fallback
-// (used if the first fetch fails). To refresh it: run scrape.js and paste the output.
+// Schedule auto-updates: the widget fetches schedule.json from the Vercel site daily. 
 
 const SCHEDULE_URL = 'https://www.brynmawr.edu/inside/offices-services/transportation/blue-bus';
 const SCHEDULE_JSON_URL = 'https://blue-bus-widget.vercel.app/schedule.json';
@@ -17,7 +15,7 @@ const ROWS_PER_SIDE = 3;
 const SCRIPT_NAME = 'Blue Bus';
 
 // Schedule is noted in minutes since midnight.
-// ---- BEGIN SCHEDULE (offline fallback; live copy is fetched from Vercel) ----
+// ---- BEGIN SCHEDULE (OFFLINE FALLBACK, USES REPO INSTEAD MOST TIMES) ----
 let SCHEDULE = {
   "mon": {
     "leavesBMC": [455, 495, 525, 550, 570, 605, 615, 635, 655, 670, 695, 730, 750, 790, 810, 840, 845, 885, 910, 960, 965, 980, 1030, 1070, 1100, 1155, 1200, 1235, 1265, 1295, 1335, 1375, 1425, 1470],
