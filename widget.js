@@ -3,16 +3,22 @@
 // MAKE SURE YOU COPY ALL CONTENTS OF THIS SCRIPT FOR IT TO WORK
 // Blue Bus (Bi-Co) — Scriptable small/medium widget
 // Left: next departures from BMC. Right: next departures from HC.
-// Tap opens the official schedule page. 
-// To refresh the schedule: run scrape.js and paste its output over the SCHEDULE block below.
+// Tap opens the official schedule page.
+// Schedule auto-updates: the widget fetches schedule.json from the Vercel site
+// once every 24h and caches it. The SCHEDULE block below is the offline fallback
+// (used if the first fetch fails). To refresh it: run scrape.js and paste the output.
 
 const SCHEDULE_URL = 'https://www.brynmawr.edu/inside/offices-services/transportation/blue-bus';
+const SCHEDULE_JSON_URL = 'https://blue-bus-widget.vercel.app/schedule.json';
+const SCHEDULE_CACHE_FILE = 'blue-bus-schedule.json';
+const SCHEDULE_CACHE_TTL_MS = 24 * 60 * 60 * 1000;
+const SCHEDULE_FETCH_TIMEOUT_S = 3;
 const ROWS_PER_SIDE = 3;
 const SCRIPT_NAME = 'Blue Bus';
 
 // Schedule is noted in minutes since midnight.
-// ---- BEGIN SCHEDULE (from scrape.js) -----------------------------------
-const SCHEDULE = {
+// ---- BEGIN SCHEDULE (offline fallback; live copy is fetched from Vercel) ----
+let SCHEDULE = {
   "mon": {
     "leavesBMC": [455, 495, 525, 550, 570, 605, 615, 635, 655, 670, 695, 730, 750, 790, 810, 840, 845, 885, 910, 960, 965, 980, 1030, 1070, 1100, 1155, 1200, 1235, 1265, 1295, 1335, 1375, 1425, 1470],
     "leavesHC":  [470, 530, 555, 580, 585, 620, 630, 650, 675, 690, 710, 760, 775, 825, 830, 860, 885, 920, 950, 970, 980, 995, 1045, 1085, 1130, 1170, 1215, 1250, 1280, 1325, 1350, 1390, 1440, 1485]
@@ -253,7 +259,38 @@ function nextRefreshMinutes(now) {
   return Math.max(REFRESH_MIN_MIN, Math.min(REFRESH_MAX_MIN, target));
 }
 
+function readScheduleCache(fm, path) {
+  try {
+    if (!fm.fileExists(path)) return null;
+    const parsed = JSON.parse(fm.readString(path));
+    if (!parsed || !parsed.data) return null;
+    return parsed;
+  } catch (e) {
+    return null;
+  }
+}
+
+// Fetches schedule.json from origin at most once per SCHEDULE_CACHE_TTL_MS.
+// Falls back to (a) any older cache on disk, (b) the embedded SCHEDULE.
+async function loadSchedule() {
+  const fm = FileManager.local();
+  const path = fm.joinPath(fm.cacheDirectory(), SCHEDULE_CACHE_FILE);
+  const cached = readScheduleCache(fm, path);
+  if (cached && Date.now() - cached.at < SCHEDULE_CACHE_TTL_MS) return cached.data;
+  try {
+    const req = new Request(SCHEDULE_JSON_URL);
+    req.timeoutInterval = SCHEDULE_FETCH_TIMEOUT_S;
+    const data = await req.loadJSON();
+    fm.writeString(path, JSON.stringify({ at: Date.now(), data }));
+    return data;
+  } catch (e) {
+    if (cached) return cached.data;
+    return SCHEDULE;
+  }
+}
+
 async function buildWidget() {
+  SCHEDULE = await loadSchedule();
   const now = new Date();
   const w = new ListWidget();
   w.url = SCHEDULE_URL;
@@ -283,8 +320,6 @@ function renameSelf() {
   }
   return false;
 }
-
-// Scriptable entry specific
 if (config.runsInApp && renameSelf()) {
   const a = new Alert();
   a.title = `Renamed to \u201c${SCRIPT_NAME}\u201d`;
