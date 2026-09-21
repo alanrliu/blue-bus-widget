@@ -10,18 +10,9 @@ A Scriptable iOS home-screen widget for the Bi-Co Blue Bus. Supports small (2x2)
 4. Long-press an empty spot on your home screen → tap `+` (top left) → search "Scriptable" → pick the **small** or **medium** size → **Add Widget**.
 5. Long-press the new widget → **Edit Widget** → set Script to "Blue Bus".
 
-## Files
-
-- `widget.js` — the Scriptable script. Paste this into Scriptable.
-- `index.html` — static landing page with a one-tap Copy button. Fetches `./widget.js` at click time.
-- `demo.mp4` / `poster.jpg` — screen recording on the landing page and its still frame. The video autoplays muted on loop; the poster shows until it starts.
-- `vercel.json` — sets `Cache-Control` on `widget.js` so users always get the latest.
-- `scrape.js` — Node script that regenerates the SCHEDULE block from the BMC page. Run manually if the schedule changes.
-- `test.js` — Node self-check for the departure-picking logic.
-
 ## Known limitations
 
-- iOS PWAs can't produce home-screen widgets — this is a real Apple restriction, hence the Scriptable route.
-- No live GPS: This widget is timetable-only. I'm not aware of one.
-- Semester breaks / holidays are not modeled. The BMC page doesn't publish variants for these.
+- iOS only, Android support may be possible using a similar/same script.
+- No live GPS: This widget is timetable-only, there aren't ways to find actual location of bus, and I didn't want to bother with your device's locations.
+- School breaks or last minute updates are not included.
 - Sun/Sat use a single "leaves HC" column (Stokes). Saturday's Suburban Square and South Lot stops are not shown.
